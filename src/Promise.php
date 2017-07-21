@@ -37,7 +37,11 @@ class Promise
             }
         }
 
-        $this->result = $value;
+        if ($value instanceof PromiseResult) {
+            $this->result = $value;
+        } else {
+            $this->result = new FulfilledPromise($value);
+        }
     }
 
     public function reject($value = null)
@@ -64,7 +68,11 @@ class Promise
             }
         }
 
-        $this->result = $value;
+        if ($value instanceof PromiseResult) {
+            $this->result = $value;
+        } else {
+            $this->result = new FulfilledPromise($value);
+        }
     }
 
     public function then(callable $resolve)
