@@ -8,69 +8,114 @@ use function PHPromise\Promise\race;
 class RaceTest extends \PHPUnit_Framework_TestCase {
     public function testSyncResolveRace()
     {
-        $resolver1 = function (callable $resolve, callable $reject) {
-            $resolve("resolve promise1");
-        };
+        $promise1 = new Promise(function (callable $resolve, callable $reject) {
+            $resolve(1);
+        });
 
-        $promise1 = new Promise($resolver1, null);
-
-        $resolver2 = function (callable $resolve, callable $reject) {
-            $resolve("resolve promise2");
-        };
-
-        $promise2 = new Promise($resolver2, null);
+        $promise2 = new Promise(function (callable $resolve, callable $reject) {
+            $resolve(2);
+        });
 
         race([$promise1, $promise2])->then(function ($value) {
-            $this->assertEquals($value, "resolve promise1");
+            $this->assertEquals($value, 1);
         });
     }
 
     public function testAsyncResolveRace()
     {
-        $resolver1 = function (callable $resolve, callable $reject) {
+        $promise1 = new Promise(function (callable $resolve, callable $reject) {
             swoole_timer_after(100, function () use ($resolve) {
-                $resolve("resolve promise1");
+                $resolve(1);
             });
-        };
+        });
 
-        $promise1 = new Promise($resolver1, null);
-
-        $resolver2 = function (callable $resolve, callable $reject) {
+        $promise2 = new Promise(function (callable $resolve, callable $reject) {
             swoole_timer_after(1000, function () use ($resolve) {
-                $resolve("resolve promise2");
+                $resolve(2);
             });
-        };
-
-        $promise2 = new Promise($resolver2, null);
+        });
 
         race([$promise1, $promise2])->then(function ($value) {
-            $this->assertEquals($value, "resolve promise1");
+            $this->assertEquals($value, 1);
+        });
+    }
+
+    public function testSyncResolveRejectRace()
+    {
+        $promise1 = new Promise(function (callable $resolve, callable $reject) {
+            $reject(1);
+        });
+
+        $promise2 = new Promise(function (callable $resolve, callable $reject) {
+            $resolve(2);
+        });
+
+        race([$promise1, $promise2])->then(function ($value) {
+            $this->assertTrue(false);
+        })->otherwise(function ($value) {
+            $this->assertEquals($value, 1);
+            return $value;
+        });
+    }
+
+    public function testAsyncResolveRejectRace()
+    {
+        $promise1 = new Promise(function (callable $resolve, callable $reject) {
+            swoole_timer_after(100, function () use ($reject) {
+                $reject(1);
+            });
+        });
+
+        $promise2 = new Promise(function (callable $resolve, callable $reject) {
+            swoole_timer_after(1000, function () use ($resolve) {
+                $resolve(2);
+            });
+        });
+
+        race([$promise1, $promise2])->then(function ($value) {
+            $this->assertTrue(false);
+        })->otherwise(function ($value) {
+            $this->assertEquals($value, 1);
+            return $value;
+        });
+    }
+
+    public function testSyncRejectRace()
+    {
+        $promise1 = new Promise(function (callable $resolve, callable $reject) {
+            $reject(1);
+        });
+
+        $promise2 = new Promise(function (callable $resolve, callable $reject) {
+            $reject(2);
+        });
+
+        race([$promise1, $promise2])->then(function ($value) {
+            $this->assertTrue(false);
+        })->otherwise(function ($value) {
+            $this->assertEquals($value, 1);
         });
     }
 
     public function testAsyncRejectRace()
     {
-        $resolver1 = function (callable $resolve, callable $reject) {
+        $promise1 = new Promise(function (callable $resolve, callable $reject) {
             swoole_timer_after(100, function () use ($reject) {
-                $reject("reject promise");
+                $reject(1);
             });
-        };
+        });
 
-        $promise1 = new Promise($resolver1, null);
-
-        $resolver2 = function (callable $resolve, callable $reject) {
-            swoole_timer_after(1000, function () use ($resolve) {
-                $resolve("resolve promise");
+        $promise2 = new Promise(function (callable $resolve, callable $reject) {
+            swoole_timer_after(1000, function () use ($reject) {
+                $reject(2);
             });
-        };
-
-        $promise2 = new Promise($resolver2, null);
+        });
 
         race([$promise1, $promise2])->then(function ($value) {
             $this->assertTrue(false);
         })->otherwise(function ($value) {
-            $this->assertEquals($value, "reject promise");
+            $this->assertEquals($value, 1);
+            return $value + 2;
         });
     }
-
 }

@@ -1,12 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: marsnowxiao
- * Date: 2017/6/16
- * Time: 上午10:21
- */
-
-require "../vendor/autoload.php";
 
 use PHPromise\Promise\Promise;
 use function PHPromise\Promise\all;
@@ -64,7 +56,6 @@ class AllTest extends \PHPUnit_Framework_TestCase {
         all([$promise1, $promise2])->then(function ($value) {
             $this->assertTrue(false);
         })->otherwise(function ($value) {
-            var_dump($value);
             $this->assertEquals($value, 2);
         });
     }
@@ -86,7 +77,6 @@ class AllTest extends \PHPUnit_Framework_TestCase {
         all([$promise1, $promise2])->then(function ($value) {
             $this->assertTrue(false);
         })->otherwise(function ($value) {
-            var_dump($value);
             $this->assertEquals($value, 2);
         });
     }
@@ -104,7 +94,7 @@ class AllTest extends \PHPUnit_Framework_TestCase {
         all([$promise1, $promise2])->then(function ($value) {
             $this->assertTrue(false);
         })->otherwise(function ($value) {
-            var_dump($value);
+            $this->assertEquals($value, 1);
         });
     }
 
@@ -125,11 +115,7 @@ class AllTest extends \PHPUnit_Framework_TestCase {
         all([$promise1, $promise2])->then(function ($value) {
             $this->assertTrue(false);
         })->otherwise(function ($value) {
-            var_dump($value);
             $this->assertEquals($value, 2);
-            return $value + 3;
-        })->then(function ($value) {
-            var_dump($value);
         });
     }
 }
