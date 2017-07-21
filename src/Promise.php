@@ -77,7 +77,7 @@ class Promise
                 } else {
                     $this->result = new FulfilledPromise($value);
                 }
-            } else {
+            } else if ($this->result == null) {
                 $this->callbackList[] = new PromiseCallback(PromiseCallback::THEN, $resolve);
             }
         } catch (\Exception $e) {
@@ -96,7 +96,7 @@ class Promise
                 } else {
                     $this->result = new FulfilledPromise($value);
                 }
-            } else {
+            } else if ($this->result == null) {
                 $this->callbackList[] = new PromiseCallback(PromiseCallback::OTHERWISE, $reject);
             }
         } catch (\Exception $e) {
