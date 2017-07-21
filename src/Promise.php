@@ -25,15 +25,14 @@ class Promise
             $type = $callback->getType();
             $fn = $callback->getFn();
             if ($type === $expect) {
+                if ($value instanceof PromiseResult) {
+                    $value = $value->getValue();
+                }
                 $value = call_user_func($fn, $value);
                 if ($value instanceof RejectedPromise) {
                     $expect = PromiseCallback::OTHERWISE;
                 } else {
                     $expect = PromiseCallback::THEN;
-                }
-
-                if ($value instanceof PromiseResult) {
-                    $value = $value->getValue();
                 }
             }
         }
@@ -53,15 +52,14 @@ class Promise
             $type = $callback->getType();
             $fn = $callback->getFn();
             if ($type === $expect) {
+                if ($value instanceof PromiseResult) {
+                    $value = $value->getValue();
+                }
                 $value = call_user_func($fn, $value);
                 if ($value instanceof RejectedPromise) {
                     $expect = PromiseCallback::OTHERWISE;
                 } else {
                     $expect = PromiseCallback::THEN;
-                }
-
-                if ($value instanceof PromiseResult) {
-                    $value = $value->getValue();
                 }
             }
         }
