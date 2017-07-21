@@ -6,4 +6,3 @@
 .settings/
 composer.lock
 /vendor
-!test/bootstrap.php
