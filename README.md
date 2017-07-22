@@ -9,5 +9,5 @@ PHP实现的promise示例,相关原理见[自己动手实现promise](https://mp.
 
 ## 测试方法:
 
-* cd test
+* cd PHPromise
 * phpunit
